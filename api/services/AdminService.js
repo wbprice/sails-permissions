@@ -16,7 +16,12 @@ module.exports = {
    * AdminService.getUser(51);
    */
 
-  getUser: function() {
+  getUser: function(userId) {
+
+    User.find(userId)
+    .then(function(users) {
+      return users;
+    });
 
   },
 
