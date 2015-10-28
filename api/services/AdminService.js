@@ -18,10 +18,11 @@ module.exports = {
 
   getUser: function(userId) {
 
-    User.find(userId)
-    .then(function(users) {
-      return users;
-    });
+    return User.find(userId)
+      .populate('roles')
+      .then(function(users) {
+        return users;
+      });
 
   },
 

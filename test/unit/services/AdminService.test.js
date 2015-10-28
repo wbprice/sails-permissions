@@ -50,17 +50,19 @@ describe('Admin Service', function() {
       assert.ok(sails.services.adminservice.getUser);
     });
 
-    it('should return all the users, with populated Role(s)', function() {
+    it('should return all the users, with populated Role(s)', function(done) {
 
-      var output = User.find().exec(function(users) {
-        return users;
+      AdminService.getUser()
+      .then(function(users) {
+        assert.ok(users);
+        done();
       });
-
-      console.log(output);
 
     });
 
-    it('should return a single user, with populated Role(s)', function() {
+    it('should return a single user, with populated Role(s)', function(done) {
+
+      done();
 
     });
 
