@@ -14,7 +14,7 @@ before(function(done) {
 
   var config = _.extend(testingConfig, {
     appPath: path.resolve(__dirname, '..')
-  })
+  });
 
   Sails.lift(config, function(err, server) {
     global.sails = server;
