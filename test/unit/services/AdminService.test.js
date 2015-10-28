@@ -7,4 +7,20 @@ describe('Admin Service', function() {
     assert.ok(global.AdminService);
   });
 
+  describe('#getUser()', function() {
+
+    it('should exist', function() {
+      assert.ok(sails.services.adminservice.getUser);
+    });
+
+  });
+
+  describe('#getRole()', function() {
+
+    it('should exist', function() {
+      assert.ok(sails.services.adminservice.getRole);
+    });
+
+  });
+
 });
