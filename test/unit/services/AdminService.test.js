@@ -1,4 +1,5 @@
 var assert = require('assert');
+var Promise = require('bluebird');
 
 describe('Admin Service', function() {
 
@@ -9,22 +10,40 @@ describe('Admin Service', function() {
 
   describe('#getUser()', function() {
 
-    beforeEach(function() {
-      User.create({
-        username: 'Phillip'
+    beforeEach(function(done) {
+
+      Promise.all([
+        User.create({
+          username: 'Phillip'
+        }),
+        User.create({
+          username: 'Georgia'
+        }),
+        User.create({
+          username: 'Hiro Protaganist'
+        })
+      ]).spread(function() {
+        done();
       });
-      User.create({
-        username: 'Georgia'
-      });
-      User.create({
-        username: 'Hiro Protaganist'
-      });
+
     });
 
     afterEach(function(done) {
-      User.destroy().exec(function() {
+
+      Promise.all([
+        User.destroy({
+          username: 'Phillip'
+        }),
+        User.destroy({
+          username: 'Georgia'
+        }),
+        User.destroy({
+          username: 'Hiro Protaganist'
+        })
+      ]).spread(function() {
         done();
       });
+
     });
 
     it('should exist', function() {
@@ -33,6 +52,11 @@ describe('Admin Service', function() {
 
     it('should return all the users, with populated Role(s)', function() {
 
+      var output = User.find().exec(function(users) {
+        return users;
+      });
+
+      console.log(output);
 
     });
 
