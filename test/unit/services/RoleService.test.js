@@ -39,7 +39,7 @@ describe('Role Service', function() {
 
     });
 
-    it('should add several Permissions to a given Role in relation to a Model', function() {
+    it('should add several Permissions to a given Role in relation to a Model', function(done) {
 
       RoleService.grant(
         { name: 'wizard' },
@@ -49,6 +49,7 @@ describe('Role Service', function() {
         assert(2, permissions.length);
         assert('read', permissions[0].action);
         assert('update', permissions[1].action);
+        done();
       });
 
     });
@@ -57,9 +58,55 @@ describe('Role Service', function() {
 
   describe('#revoke()', function() {
 
-    it('should exist', function() {
-      assert.ok(sails.services.roleservice.revoke);
+    beforeEach(function(done) {
+
+      Role.create({
+        name: 'wizard'
+      }).then(function(role) {
+        return PermissionService.grant([
+          { role: 'wizard', model: 'Model', action: 'read' },
+          { role: 'wizard', model: 'Model', action: 'create' }
+        ]);
+      }).then(function() {
+        done();
+      });
+
     });
+
+    afterEach(function(done) {
+
+      Role.destroy({
+        name: 'wizard'
+      }).then(function() {
+        done();
+      });
+
+    });
+
+    it('should revoke a single Permission from a given Role', function() {
+
+      RoleService.revoke(
+        { name: 'wizard' },
+        { model: 'Model' },
+        'read'
+      ).then(function(permissions) {
+        assert.equal(1, permissions.length);
+        assert.equal('create', permissions[0].action);
+      });
+
+    });
+
+    it('should revoke multiple Permissions from a given Role', function() {
+
+      RoleService.revoke(
+        { name: 'wizard' },
+        { model: 'Model' },
+        ['read', 'create']
+      ).then(function(permissions) {
+        assert.equal(0, permissions.length);
+      });
+
+    })
 
   });
 

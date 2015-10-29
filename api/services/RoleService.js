@@ -53,14 +53,18 @@ module.exports = {
    * Role.revoke(23, 51, 'delete');
    */
 
-   revoke: function(roleId, modelId, action) {
+   revoke: function(roleId, modelId, actions) {
 
       Promise.all([
         Role.findOne(roleId),
         Model.findOne(modelId)
-      ]).spread(function() {
+      ]).spread(function(role, model) {
 
-        console.log('revoke promises were resolved!');
+        if (_.isArray(actions)) {
+
+        } else if (_.isString(actions)) {
+
+        }
 
       });
 
