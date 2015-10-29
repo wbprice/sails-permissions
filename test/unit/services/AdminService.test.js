@@ -76,8 +76,66 @@ describe('Admin Service', function() {
 
   describe('#getRole()', function() {
 
-    it('should exist', function() {
-      assert.ok(sails.services.adminservice.getRole);
+    beforeEach(function(done) {
+      
+      User.create({
+        username: 'Harry Potter'
+      }).then(function(user) {
+        return Role.create({
+          name: 'wizard',
+          users: [user.id]
+        });
+      }).then(function(role) {
+        return PermissionService.grant({
+          role: 'wizard',
+          model: 'Model',
+          action: 'read'
+        });
+      }).then(function(permission) {
+        done();
+      });
+
+    });
+
+    afterEach(function(done) {
+
+      User.destroy({
+        username: 'Harry Potter'
+      }).then(function(user) {
+        return Role.destroy({
+          name: 'wizard'
+        });
+      }).then(function(role) {
+        done();
+      })
+
+    });
+
+    it('should return a list of Roles, with populated Model(s)', function(done) {
+
+      AdminService.getRole()
+        .then(function(roles) {
+
+
+
+          assert.ok(roles[0].permissions);
+          done();
+        });
+
+    });
+
+    it.skip('should return a single Role, with populated Models(s)', function(done) {
+
+      Role.find(2).then(function(roles) {
+
+        AdminService.getRole(roles[0].id).then(function(role) {
+          console.log(role[0]);
+          assert.ok(role[0]);
+          done();
+        });
+
+      });
+
     });
 
   });

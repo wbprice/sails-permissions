@@ -26,10 +26,10 @@ module.exports = {
 
   },
 
-  getRole: function() {
+  getRole: function(roleId) {
 
     return Role.find(roleId)
-      .populate('models')
+      .populate('permissions')
       .then(function(roles) {
         return roles;
       });
