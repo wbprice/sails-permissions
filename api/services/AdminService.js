@@ -28,6 +28,12 @@ module.exports = {
 
   getRole: function() {
 
+    return Role.find(roleId)
+      .populate('models')
+      .then(function(roles) {
+        return roles;
+      });
+
   }
 
 };

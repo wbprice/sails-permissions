@@ -46,29 +46,28 @@ describe('Admin Service', function() {
 
     });
 
-    it('should exist', function() {
-      assert.ok(sails.services.adminservice.getUser);
-    });
-
     it('should return all the users, with populated Role(s)', function(done) {
 
       AdminService.getUser()
       .then(function(users) {
-        assert.ok(users);
+
+        var firstRole = _.first(_.reduce(users, function(prev, current) {
+          return prev.concat(current.roles);
+        }, []));
+
+        assert.ok(firstRole.name);
         done();
+
       });
 
     });
 
     it('should return a single user, with populated Role(s)', function(done) {
 
-      User.find().limit(1).then(function(user) {
-
-        AdminService.getUser(user.id).then(function(user) {
-          assert.ok(user);
-          done();
+      User.find({username: 'Georgia'}).then(function(aUser) {
+        AdminService.getUser(aUser.id).then(function(user) {
+          done(assert.ok(user[0].roles[0].name));
         });
-
       });
 
     });
