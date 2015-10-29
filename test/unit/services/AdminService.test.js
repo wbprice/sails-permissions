@@ -98,7 +98,29 @@ describe('Admin Service', function() {
     });
 
     afterEach(function(done) {
-      done();
+
+      // Unable to pass an array to User#destroy?
+
+      Promise.all([
+        User.destroy({
+          username: 'Harry Potter'
+        }),
+        User.destroy({
+          username: 'Hermione Granger'
+        })
+      ]).spread(function(harry, hermione) {
+        return Promise.all([
+          Role.destroy({
+            name: 'witch'
+          }),
+          Role.destroy({
+            name: 'wizard'
+          })
+        ]);
+      }).then(function() {
+        done();
+      });
+
     });
 
     it('should return a list of Roles, with populated Permissions', function(done) {
@@ -106,35 +128,34 @@ describe('Admin Service', function() {
       AdminService.getRole()
         .then(function(roles) {
 
-          var wizard, witch;
-
-          wizard = _.find(roles, function(role) {
+          var wizard = _.find(roles, function(role) {
             return role.name === 'wizard';
-          });
+          }),
           witch = _.find(roles, function(role) {
             return role.name === 'witch';
           });
 
-          console.log('witchcraft and wizardry');
-          console.log(wizard);
-          console.log(witch);
-
-          // assert.ok(wizard);
-          // assert.equal(1, wizard.permissions.length);
-
+          assert.equal(1, wizard.permissions.length);
+          assert.equal('create', wizard.permissions[0].action);
+          assert.equal(1, witch.permissions.length);
+          assert.equal('create', witch.permissions[0].action);
           done();
+
         });
 
     });
 
-    it.skip('should return a single Role, with populated Permissions', function(done) {
+    it('should return a single Role, with populated Permissions', function(done) {
 
-      Role.find(2).then(function(roles) {
+      Role.find({name: 'wizard'}).then(function(aRole) {
 
-        AdminService.getRole(roles[0].id).then(function(role) {
-          console.log(role[0]);
-          assert.ok(role[0]);
+        AdminService.getRole(aRole[0].id).then(function(role) {
+
+          assert.equal(1, role.length);
+          assert.equal(1, role[0].permissions.length);
+          assert.equal('create', role[0].permissions[0].action);
           done();
+
         });
 
       });

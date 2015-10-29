@@ -15,14 +15,28 @@ module.exports = {
    * Role.grant(23, 51, 'delete');
    */
 
-  grant: function(roleId, modelId, action) {
+  grant: function(roleId, modelId, actions) {
 
-    Promise.all([
+    return Promise.all([
       Role.findOne(roleId),
       Model.findOne(modelId)
-    ]).spread(function() {
+    ]).spread(function(role, model) {
 
-      console.log('grant promises were resolved');
+      if (_.isArray(actions)) {
+
+        return Promise.map(actions, function(action) {
+          return PermissionService.grant({
+            role: role.name, model: model.identity, action: action
+          });
+        });
+
+      } else if (_.isString(actions)) {
+
+        return PermissionService.grant({
+          role: role.name, model: model.identity, action: actions
+        });
+
+      }
 
     });
 

@@ -26,6 +26,18 @@ module.exports = {
 
   },
 
+  /**
+   * @name AdminService#getRole
+   * @description
+   * A service that returns a list of (or optionally, one) active roles, with
+   * populated Permissions.
+   * @example
+   * // Get Role of ID '1';
+   * AdminService.getRole(1);
+   * // Get all Roles
+   * AdminService.getRole();
+   */
+
   getRole: function(roleId) {
 
     return Role.find(roleId)
