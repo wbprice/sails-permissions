@@ -77,21 +77,26 @@ describe('Admin Service', function() {
   describe('#getRole()', function() {
 
     beforeEach(function(done) {
-      
-      User.create({
-        username: 'Harry Potter'
-      }).then(function(user) {
+
+      Promise.all([
+        User.create({
+          username: 'Harry Potter'
+        }),
+        User.create({
+          username: 'Hermione Granger'
+        })
+      ]).spread(function(harry, hermione) {
         return Role.create({
           name: 'wizard',
-          users: [user.id]
+          users: [harry.id, hermione.id]
         });
       }).then(function(role) {
         return PermissionService.grant({
           role: 'wizard',
           model: 'Model',
-          action: 'read'
+          action: 'create'
         });
-      }).then(function(permission) {
+      }).then(function() {
         done();
       });
 
@@ -99,32 +104,41 @@ describe('Admin Service', function() {
 
     afterEach(function(done) {
 
-      User.destroy({
-        username: 'Harry Potter'
-      }).then(function(user) {
+      Promise.all([
+        User.destroy({
+          username: 'Harry Potter'
+        }),
+        User.destroy({
+          username: 'Hermione Granger'
+        })
+      ]).then(function(users) {
         return Role.destroy({
           name: 'wizard'
         });
-      }).then(function(role) {
+      }).then(function() {
         done();
-      })
+      });
 
     });
 
-    it('should return a list of Roles, with populated Model(s)', function(done) {
+    it('should return a list of Roles, with populated Permissions', function(done) {
 
       AdminService.getRole()
         .then(function(roles) {
 
+          var wizard = _.find(roles, function(role) {
+            return role.name === 'wizard';
+          });
 
+          assert.ok(wizard);
+          assert.equal(1, wizard.permissions.length);
 
-          assert.ok(roles[0].permissions);
           done();
         });
 
     });
 
-    it.skip('should return a single Role, with populated Models(s)', function(done) {
+    it.skip('should return a single Role, with populated Permissions', function(done) {
 
       Role.find(2).then(function(roles) {
 
