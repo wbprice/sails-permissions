@@ -62,7 +62,14 @@ describe('Admin Service', function() {
 
     it('should return a single user, with populated Role(s)', function(done) {
 
-      done();
+      User.find().limit(1).then(function(user) {
+
+        AdminService.getUser(user.id).then(function(user) {
+          assert.ok(user);
+          done();
+        });
+
+      });
 
     });
 
